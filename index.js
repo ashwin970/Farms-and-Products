@@ -5,6 +5,7 @@ const ejsMate = require('ejs-mate');
 const path = require('path');
 const Farm = require('./models/farm');
 const Product = require('./models/product');
+const methodOverride = require('method-override');
 
 
 app.engine('ejs',ejsMate);
@@ -26,7 +27,12 @@ db.once("open",()=>{
 })
 
 app.use(express.urlencoded({extended:true}));
-//app.use(methodOverride('_method'));
+app.use(methodOverride('_method'));
+
+
+
+//Farms
+
 
 app.get('/farms',async(req,res)=>{
     const farms = await Farm.find({});
@@ -54,10 +60,49 @@ app.get('/',(req, res)=>{
 
 app.get('/products',async(req, res)=>{
     const products = await Product.find({})
-    console.log(products)
-    res.send('Products are here');
+    //console.log(products)
+    res.render("Product/index.ejs", {products})
 
 })
+
+app.get('/new',(req, res)=>{
+    res.render('Product/new.ejs');
+})
+
+app.post('/products',async(req, res)=>{
+    const newProduct = new Product(req.body);
+    await newProduct.save();
+    //console.log(newProduct);
+    res.redirect(`/products/${newProduct._id}`);
+
+})
+
+app.get('/products/:id/edit',async(req, res)=>{
+    const {id}= req.params;
+    const product= await Product.findById(id);
+    res.render('Product/edit.ejs',{product})
+
+})
+
+app.put('/products/:id',async(req, res)=>{
+    const {id} = req.params;
+    const product = await Product.findByIdAndUpdate(id, req.body, {runValidators: true, new: true, useFindAndModify: false});
+    //console.log(req.body);
+    //res.send('put');
+    res.redirect(`/products/${product._id}`)
+
+})
+
+
+app.get('/products/:id',async(req,res)=>{
+    const {id}= req.params;
+    const product= await Product.findById(id);
+    res.render('Product/show.ejs',{product});
+    //console.log(product);
+})
+
+
+
 
 app.listen(7000,()=>{
     console.log('listening');
