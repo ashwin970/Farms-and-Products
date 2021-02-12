@@ -59,14 +59,25 @@ app.get('/',(req, res)=>{
 //PRODUCTS
 
 app.get('/products',async(req, res)=>{
-    const products = await Product.find({})
+    
+    const { category } = req.query;
+    if(category){
+        const products = await Product.find({category})
+        res.render("Product/index.ejs", {products, category})
+    }
+    else{
+        const products = await Product.find({})
+        res.render("Product/index.ejs", {products, category: 'All'})
+    }
+    
     //console.log(products)
-    res.render("Product/index.ejs", {products})
+    
 
 })
 
+const categories = ['fruit', 'vegetable', 'dairy'];
 app.get('/new',(req, res)=>{
-    res.render('Product/new.ejs');
+    res.render('Product/new.ejs',{categories});
 })
 
 app.post('/products',async(req, res)=>{
@@ -80,7 +91,7 @@ app.post('/products',async(req, res)=>{
 app.get('/products/:id/edit',async(req, res)=>{
     const {id}= req.params;
     const product= await Product.findById(id);
-    res.render('Product/edit.ejs',{product})
+    res.render('Product/edit.ejs',{product, categories})
 
 })
 
@@ -99,6 +110,12 @@ app.get('/products/:id',async(req,res)=>{
     const product= await Product.findById(id);
     res.render('Product/show.ejs',{product});
     //console.log(product);
+})
+
+app.delete('/products/:id',async(req, res)=>{
+    const { id } = req.params;
+    const deleteProduct = await Product.findByIdAndDelete(id);
+    res.redirect('/products');
 })
 
 

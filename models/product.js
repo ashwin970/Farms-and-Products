@@ -5,7 +5,7 @@ const ProductSchema = new Schema({
     price: Number,
     category: {
         type: String,
-        enum: ['fruit', 'vegetable', 'dairy']
+        categories: ['fruit', 'vegetable', 'dairy']
     }
 });
 

@@ -16,12 +16,16 @@
         </li>
 
         <li>
-            Category : <%= product.category %>  
+            Category :<a href="/products?category=<%= product.category %> ">  <%= product.category %> </a> 
          </li>
     </ul>
 
     <a href="/products"> all products </a>
     <a href="/products/<%= product._id %>/edit"> Edit product </a>
+    <form action="/products/<%= product._id %>?_method=DELETE " method="POST">
+
+        <button> delete </button>
+    </form>
 
 
 
